@@ -43,5 +43,18 @@ $ fashion_reader
     ├── model.pt
     ├── answers.csv
     ├── score.jpg
+    ├── train_config_base.yaml
     └── train_log.log
 ```
+
+### Description
+|Version|Pre-trained Model|Link|
+|:---|:---|:---|
+| <pre>V1 | <pre>xlm-roberta-base & resnet50 | <pre> |
+| <pre>V2 | <pre>xlm-roberta-large & resnet50 | <pre> |
+| <pre>V3 | <pre>xlm-roberta-base & resnet152 | <pre> |
+| <pre>V4 | <pre>xlm-roberta-base & resnet152 | <pre> |
+| <pre>V5 | <pre>xlm-roberta-base & resnet152 | <pre> |
+| <pre>V6 | <pre>koelectra-base-v3-discriminator & resnet50 | <pre> |
+| <pre>V7 | <pre>koelectra-base-v3-discriminator & efficientnet b0 | <pre> |
+| <pre>V8 | <pre>xlm-roberta-large & resnet50 | <pre> |
