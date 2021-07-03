@@ -9,14 +9,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import math
 from models.get_model import get_model
 from modules.dataset import CustomDatasetV1
 from modules.earlystoppers import LossEarlyStopper
 from modules.recorders import PerformanceRecorder
 from modules.trainer import CustomTrainer
-from modules.utils import load_yaml, save_yaml, get_logger, make_directory
-import os 
+from modules.utils import load_yaml, save_yaml, get_logger, make_directory, CosineAnnealingWarmUpRestart
+import os
 
 # DEBUG
 DEBUG = False
@@ -25,7 +24,7 @@ DEBUG = False
 PROJECT_DIR = "./"
 ROOT_PROJECT_DIR = os.path.dirname(PROJECT_DIR)
 DATA_DIR = "/DATA/Final_DATA/"
-TRAIN_CONFIG_PATH = os.path.join(PROJECT_DIR, 'config/train_config_v1.yaml')
+TRAIN_CONFIG_PATH = os.path.join(PROJECT_DIR, 'config/train_config_v2.yaml')
 config = load_yaml(TRAIN_CONFIG_PATH)
 
 # SEED
@@ -66,7 +65,6 @@ TRAIN_SERIAL = f'{MODEL}_{TRAIN_TIMESTAMP}' if DEBUG is not True else 'DEBUG'
 PERFORMANCE_RECORD_DIR = os.path.join(PROJECT_DIR, 'results', 'train', TRAIN_SERIAL)
 PERFORMANCE_RECORD_COLUMN_NAME_LIST = config['PERFORMANCE_RECORD']['column_list']
 
-
 if __name__ == '__main__':
     # Set random seed
     torch.manual_seed(RANDOM_SEED)
@@ -93,11 +91,11 @@ if __name__ == '__main__':
     
     # Load Model
     Model = get_model(model_str=MODEL)
-    model = Model(num_targets=NUM_TARGETS, dim_i=DIM_I, dim_q=DIM_Q, dim_h=DIM_H).to(device)
+    model = Model(num_targets=NUM_TARGETS, dim_i=DIM_I, dim_q=DIM_Q, dim_h=DIM_H, large=True).to(device)
     
     # Set optimizer, scheduler, loss function, metric function
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-    scheduler = None
+    scheduler = CosineAnnealingWarmUpRestart(optimizer, T_0=3, T_mult=1, eta_max=2e-5,  T_up=1, gamma=0.6)
     loss_fn = nn.CrossEntropyLoss()
     metric_fn = accuracy_score
 
@@ -131,7 +129,7 @@ if __name__ == '__main__':
                                                scheduler=None)
 
     # Save config yaml file
-    save_yaml(os.path.join(PERFORMANCE_RECORD_DIR, 'train_config_v1.yaml'), config)
+    save_yaml(os.path.join(PERFORMANCE_RECORD_DIR, 'train_config_v2.yaml'), config)
     
     # Train
     for epoch in range(EPOCHS):
