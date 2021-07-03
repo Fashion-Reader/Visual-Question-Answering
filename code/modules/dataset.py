@@ -68,7 +68,7 @@ class TestDataset(Dataset):
                 'image': image}
 
     
-class CustomDatasetBase(Dataset):
+class CustomDatasetV1(Dataset):
     def __init__(self, root_dir, result_dir, config, mode='train'):
         root_dir = os.path.join(root_dir, 'task07_train')
         PREPROCESS_SERIAL = str(config['PREPROCESS']['preprocess_serial'])
