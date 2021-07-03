@@ -70,8 +70,7 @@ class TestDataset(Dataset):
     
 class CustomDatasetBase(Dataset):
     def __init__(self, root_dir, result_dir, config, mode='train'):
-
-        self.root_dir = root_dir
+        root_dir = os.path.join(root_dir, 'task07_train')
         PREPROCESS_SERIAL = str(config['PREPROCESS']['preprocess_serial'])
         if PREPROCESS_SERIAL=='None':
             self.data_dir = os.path.join(root_dir)
