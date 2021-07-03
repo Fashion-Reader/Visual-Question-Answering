@@ -60,11 +60,8 @@ $ fashion_reader
 ### Description
 |Version|Pre-trained Model|Config|
 |:---|:---|:---|
-| <pre>V1 | <pre>xlm-roberta-base & resnet50 | [Link](https://github.com/Fashion-Reader/Visual-Question-Answering/blob/main/code/results/train_v1/train_config_v1.yaml) |
-| <pre>V2 | <pre>xlm-roberta-large & resnet50 | <pre> |
-| <pre>V3 | <pre>xlm-roberta-base & resnet152 | <pre> |
-| <pre>V4 | <pre>xlm-roberta-base & resnet152 | <pre> |
-| <pre>V5 | <pre>xlm-roberta-base & resnet152 | <pre> |
-| <pre>V6 | <pre>koelectra-base-v3-discriminator & resnet50 | <pre> |
-| <pre>V7 | <pre>koelectra-base-v3-discriminator & efficientnet b0 | <pre> |
-| <pre>V8 | <pre>xlm-roberta-large & resnet50 | <pre> |
+| V1 | xlm-roberta-base & resnet50 | [Link](https://github.com/Fashion-Reader/Visual-Question-Answering/blob/main/code/results/train_v1/train_config_v1.yaml) |
+| V2 | xlm-roberta-large & resnet50 |  |
+| V3 | xlm-roberta-base & resnet152 |  |
+| V4 | xlm-roberta-base & resnet152 |  |
+| V5 | xlm-roberta-base & resnet152 |  |
