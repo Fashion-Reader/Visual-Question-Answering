@@ -14,7 +14,8 @@ $ pip install -r requirements.txt
 
 #### 2. Train
 ```
-$ python3 train_v1.py
+$ python3 train_v1.py # version 1
+$ python3 train_v2.py # version 2
 ```
 
 #### 3. Inference
@@ -37,25 +38,29 @@ $ fashion_reader
 │   ├── trainer.py
 │   └── utils.py
 ├── results
-└── train_v1.py
+├── train_v1.py
+└── train_v2.py
 ```
 
 ### Output
 ```
 $ fashion_reader
 └── results
-    ├── loss.png
-    ├── model.pt
-    ├── answers.csv
-    ├── score.jpg
-    ├── train_config_base.yaml
-    └── train_log.log
+    ├── train_v1
+    │     ├── loss.png
+    │     ├── model.pt
+    │     ├── answers.csv
+    │     ├── score.jpg
+    │     ├── train_config_base.yaml
+    │     └── train_log.log
+    ├── train_v2
+    │     └── ...
 ```
 
 ### Description
-|Version|Pre-trained Model|Link|
+|Version|Pre-trained Model|Config|
 |:---|:---|:---|
-| <pre>V1 | <pre>xlm-roberta-base & resnet50 | <pre> |
+| <pre>V1 | <pre>xlm-roberta-base & resnet50 | [Link](https://github.com/Fashion-Reader/Visual-Question-Answering/blob/main/code/results/train_v1/train_config_v1.yaml) |
 | <pre>V2 | <pre>xlm-roberta-large & resnet50 | <pre> |
 | <pre>V3 | <pre>xlm-roberta-base & resnet152 | <pre> |
 | <pre>V4 | <pre>xlm-roberta-base & resnet152 | <pre> |
