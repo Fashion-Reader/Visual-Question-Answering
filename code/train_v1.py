@@ -24,7 +24,7 @@ DEBUG = False
 # CONFIG
 PROJECT_DIR = "./"
 ROOT_PROJECT_DIR = os.path.dirname(PROJECT_DIR)
-DATA_DIR = os.path.join(ROOT_PROJECT_DIR, '../data/task07_train')
+DATA_DIR = "/DATA/Final_DATA/"
 TRAIN_CONFIG_PATH = os.path.join(PROJECT_DIR, 'config/train_config_base.yaml')
 config = load_yaml(TRAIN_CONFIG_PATH)
 
