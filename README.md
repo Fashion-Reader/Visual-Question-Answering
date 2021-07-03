@@ -1,4 +1,9 @@
-# Visual-Question-Answering
+## Visual Question Answering
+> - 이미지를 보고 주어진 질문에 답변하는 Visual Question Answering 모델 개발
+
+### Members
+
+| [권태양](https://github.com/sunnight9507) | [류재희](https://github.com/JaeheeRyu) | [박종헌](https://github.com/PJHgh) | [신찬엽](https://github.com/chanyub) | [조원](https://github.com/jo-member) |
 
 ### Set up
 
