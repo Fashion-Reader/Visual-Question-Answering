@@ -16,11 +16,15 @@ $ pip install -r requirements.txt
 ```
 $ python3 train_v1.py # version 1
 $ python3 train_v2.py # version 2
+$ python3 train_v3.py # version 3
 ```
 
 #### 3. Inference
 ```
-$ 
+$ python3 inference_v1.py # version 1
+$ python3 inference_v2.py # version 2
+$ python3 inference_v3.py # version 3
+$ python3 ensemble.py # ensemble
 ```
 
 ### Code File
@@ -39,7 +43,12 @@ $ fashion_reader
 │   └── utils.py
 ├── results
 ├── train_v1.py
-└── train_v2.py
+├── inference_v1.py
+├── train_v2.py
+├── inference_v2.py
+├── train_v3.py
+├── inference_v3.py
+└── ensemble.py
 ```
 
 ### Output
@@ -55,6 +64,8 @@ $ fashion_reader
     │     └── train_log.log
     ├── train_v2
     │     └── ...
+    └── train_v3
+          └── ...
 ```
 
 ### Description
@@ -63,5 +74,3 @@ $ fashion_reader
 | V1 | xlm-roberta-base & resnet50 | [Link](https://github.com/Fashion-Reader/Visual-Question-Answering/blob/main/code/results/train_v1/train_config_v1.yaml) |
 | V2 | xlm-roberta-large & resnet50 |  |
 | V3 | xlm-roberta-base & resnet152 |  |
-| V4 | xlm-roberta-base & resnet152 |  |
-| V5 | xlm-roberta-base & resnet152 |  |
