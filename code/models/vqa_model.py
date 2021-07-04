@@ -7,7 +7,7 @@ from torch import nn
 import torchvision.models as models
 
 class VQAModel(nn.Module):
-    def __init__(self, num_targets, dim_i, dim_q, dim_h=1024, large=False):
+    def __init__(self, num_targets, dim_i, dim_q, dim_h=1024, large=False, res152=False):
         super(VQAModel, self).__init__()
 
         #The BERT model: 질문 --> Vector 처리를 위한 XLM-Roberta모델 활용
@@ -15,7 +15,7 @@ class VQAModel(nn.Module):
         self.bert = transformers.XLMRobertaModel.from_pretrained(model)
 
         #Backbone: 이미지 --> Vector 처리를 위해 ResNet50을 활용
-        self.resnet = models.resnet50(pretrained=True)
+        self.resnet = models.resnet152(pretrained=True) if res152 else models.resnet50(pretrained=True)
         self.resnet.fc = nn.Linear(self.resnet.fc.in_features, dim_i)
         self.i_relu = nn.ReLU()
         self.i_drop = nn.Dropout(0.2)
