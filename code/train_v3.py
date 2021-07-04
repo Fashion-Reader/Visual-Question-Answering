@@ -8,6 +8,8 @@ import torch.optim.lr_scheduler as lr_scheduler
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
+from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from models.get_model import get_model
 from modules.dataset import CustomDatasetV1
@@ -15,7 +17,11 @@ from modules.earlystoppers import LossEarlyStopper
 from modules.recorders import PerformanceRecorder
 from modules.trainer import CustomTrainer
 from modules.utils import load_yaml, save_yaml, get_logger, make_directory, CosineAnnealingWarmUpRestart
+from transformers import get_cosine_with_hard_restarts_schedule_with_warmup
+import warnings
 import os
+
+warnings.filterwarnings("ignore")
 
 # DEBUG
 DEBUG = False
@@ -24,7 +30,7 @@ DEBUG = False
 PROJECT_DIR = "./"
 ROOT_PROJECT_DIR = os.path.dirname(PROJECT_DIR)
 DATA_DIR = "/DATA/Final_DATA/"
-TRAIN_CONFIG_PATH = os.path.join(PROJECT_DIR, 'config/train_config_v2.yaml')
+TRAIN_CONFIG_PATH = os.path.join(PROJECT_DIR, 'config/train_config_v3.yaml')
 config = load_yaml(TRAIN_CONFIG_PATH)
 
 # SEED
@@ -65,6 +71,30 @@ TRAIN_SERIAL = f'{MODEL}_{TRAIN_TIMESTAMP}' if DEBUG is not True else 'DEBUG'
 PERFORMANCE_RECORD_DIR = os.path.join(PROJECT_DIR, 'results', 'train', TRAIN_SERIAL)
 PERFORMANCE_RECORD_COLUMN_NAME_LIST = config['PERFORMANCE_RECORD']['column_list']
 
+
+class FocalLoss(nn.Module):
+    def __init__(self, gamma=0, size_average=True):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.size_average = size_average
+
+    def forward(self, input, target):
+        if input.dim()>2:
+            input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
+            input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
+            input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
+        target = target.view(-1,1)
+
+        logpt = F.log_softmax(input)
+        logpt = logpt.gather(1,target)
+        logpt = logpt.view(-1)
+        pt = Variable(logpt.data.exp())
+
+        loss = -1 * (1-pt)**self.gamma * logpt
+        if self.size_average: return loss.mean()
+        else: return loss.sum()
+        
+        
 if __name__ == '__main__':
     # Set random seed
     torch.manual_seed(RANDOM_SEED)
@@ -88,17 +118,20 @@ if __name__ == '__main__':
     validation_dataset = CustomDatasetV1(root_dir=DATA_DIR, result_dir=PERFORMANCE_RECORD_DIR, config=config, mode='val')
     train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY, shuffle=True, drop_last=True)
     validation_dataloader = DataLoader(validation_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY, shuffle=False, drop_last=True)
-    MODEL_PATH = '/RESULT/code/results/train/train_v2/model.pt'
     
     # Load Model
-    
     Model = get_model(model_str=MODEL)
-    model = Model(num_targets=NUM_TARGETS, dim_i=DIM_I, dim_q=DIM_Q, dim_h=DIM_H, large=True).to(device)
-#     model.load_state_dict(torch.load(MODEL_PATH)['model'])
+    model = Model(num_targets=NUM_TARGETS, dim_i=DIM_I, dim_q=DIM_Q, dim_h=DIM_H, large=False, res152=True).to(device)
+#     model.load_state_dict(torch.load("/fashion_reader/code/results/train/vqa_model_20210704124859/model.pt")["model"])
+    
     # Set optimizer, scheduler, loss function, metric function
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-    scheduler = None
-    loss_fn = nn.CrossEntropyLoss()
+#     scheduler = CosineAnnealingWarmUpRestart(optimizer, T_0=3, T_mult=1, eta_max=2e-5,  T_up=1, gamma=0.6)
+    scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer=optimizer,
+                                                                   num_warmup_steps=len(train_dataset)//BATCH_SIZE,
+                                                                   num_training_steps=len(train_dataset),
+                                                                   num_cycles=EPOCHS)
+    loss_fn = FocalLoss()
     metric_fn = accuracy_score
 
     # Set trainer
@@ -131,7 +164,7 @@ if __name__ == '__main__':
                                                scheduler=None)
 
     # Save config yaml file
-    save_yaml(os.path.join(PERFORMANCE_RECORD_DIR, 'train_config_v2.yaml'), config)
+    save_yaml(os.path.join(PERFORMANCE_RECORD_DIR, 'train_config_v3.yaml'), config)
     
     # Train
     for epoch in range(EPOCHS):
