@@ -22,52 +22,6 @@ import torchvision.transforms as transforms
 from sklearn.model_selection import train_test_split
 
 
-class TestDataset(Dataset):
-    def __init__(self,root_dir):
-        self.root_dir = root_dir
-        self.data_dir = os.path.join(root_dir, 'data')
-        self.img_dir = os.path.join(self.data_dir, 'test_images')
-        self.csv_path = os.path.join(self.data_dir,'test.csv')
-        self.data_df = pd.read_csv(self.csv_path)
-        
-        self.tokenizer = transformers.XLMRobertaTokenizer.from_pretrained('xlm-roberta-base')
-        self.max_token = 30
-        self.transform = transforms.Compose([
-            transforms.Resize((356,356)),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-        ])
-        
-    def __len__(self):
-        return self.data_df.shape[0]
-
-    def __getitem__(self, idx):
-        img_fn = self.data_df['image'][idx]
-        question = self.data_df['question'][idx]
-
-        # BERT기반의 Tokenizer로 질문을 tokenize한다.
-        tokenized = self.tokenizer.encode_plus("".join(question),
-                                     None,
-                                     add_special_tokens=True,
-                                     max_length=self.max_token,
-                                     truncation=True,
-                                     pad_to_max_length=True)
-
-        # BERT기반의 Tokenize한 질문의 결과를 변수에 저장
-        ids = tokenized['input_ids']
-        mask = tokenized['attention_mask']
-
-        image_path = os.path.join(self.img_dir, img_fn)
-        image = Image.open(image_path).convert('RGB')  #이미지 데이터를 RGB형태로 읽음
-        image = self.transform(image)  #이미지 데이터의 크기 및 각도등을 변경
-
-
-        #전처리가 끝난 질문, 이미지 데이터를 반환
-        return {'ids': torch.tensor(ids, dtype=torch.long),
-                'mask': torch.tensor(mask, dtype=torch.long),
-                'image': image}
-
-    
 class CustomDatasetV1(Dataset):
     def __init__(self, root_dir, result_dir, config, mode='train'):
         root_dir = os.path.join(root_dir, 'task07_train')
